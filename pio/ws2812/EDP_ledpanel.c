@@ -63,18 +63,37 @@ static inline uint32_t urgb_u32(uint8_t r, uint8_t g, uint8_t b) {
             (uint32_t) (b);
 }
   
-void pattern_EDP(uint len, uint t) {
+void pattern_EDP() {
     //文字データ：新潟大学コンピュータクラブ  -- EDP --
     uint8_t print_char[] = { 0xf2, 0x00,0x01,0x02,0x03, 0xf0, 0xa8,0xe8,0xc9,0xda,0xee,0xb4,0xa4,0xde,0xcb, 0xf1, 0x00,0x00,0x0d,0x0d,0x00,0x25,0x24,0x30,0x00,0x0d,0x0d, };
-    const uint8_t print_char_len = 
+    const uint8_t print_char_len = sizeof(print_char) / sizeof(print_char[0]);
     uint8_t framebuffer[8][256][3];
-    bool binBit[8];
-    while(num <= 1){
-        uint8_t roopCnt = 0;
-        binBit[8 - roopCnt] = print_char[print_char_len] % 2
-        print_char[print_char_len] /= 2;
-        roopCnt += 1;
+
+    for(i=0; i<=print_char_len; i++){
+        bool bin_8bit[8];
+        const uint8_t bin_8bit_len = sizeof(bin_8bit) / sizeof(bin_8bit[0])
+        uint8_t char_tmp = print_char[i];
+        while(char_tmp <= 1){
+            uint8_t roop_cnt = 0;
+            bin_8bit[8 - roopCnt] = char_tmp % 2;
+            char_tmp /= 2;
+            roop_cnt += 1;
+        }
+        for(j=0; j<=bin_8bit_len; j++){
+            if(bin_8bit[j] == 0){
+                // set no color
+                for(k=0; k<=3; k++){
+                    framebuffer[j][i][k] = 0;
+                }
+            }else if(bin_8bit[j] == 1){
+                // set RGB color
+                for(k=0; k<=3; k++){
+                    framebuffer[j][i][k] = 10;
+                }
+            }
+        } 
     }
+
 
     for(uint i=0; i<8; i++){
         put_pixel(urgb_u32(0x00, 0x00, 0x10));
