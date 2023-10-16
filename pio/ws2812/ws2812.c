@@ -6,6 +6,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "pico/stdlib.h"
 #include "hardware/pio.h"
@@ -13,7 +14,7 @@
 #include "ws2812.pio.h"
 
 #define IS_RGBW false
-#define NUM_PIXELS 512 
+#define NUM_PIXELS 256 
 // NUM_PIXELS は パネルのドット数
 
 #ifdef PICO_DEFAULT_WS2812_PIN
@@ -22,6 +23,24 @@
 // default to pin 2 if the board doesn't have a default WS2812 pin defined
 #define WS2812_PIN 2
 #endif
+
+
+/*
+hexをbinに変換する関数hexToBin
+1つのhexをbinに変換して戻り値で１つのbinを返す
+16進数の各桁を１０進数に変換
+それを２で割って
+
+１０進数を２で割った余りを使う方法
+１０進数を４bitの２進数の各桁が示す１０進数の値の内大きい順から割っていく方法
+
+*/
+uint hexToBin(char hex){
+    const uint bin4bitdec[4] = {8, 4, 2, 1};
+    
+    
+    return ;
+}
 
 static inline void put_pixel(uint32_t pixel_grb) {
     pio_sm_put_blocking(pio0, 0, pixel_grb << 8u);
@@ -34,11 +53,19 @@ static inline uint32_t urgb_u32(uint8_t r, uint8_t g, uint8_t b) {
             (uint32_t) (b);
 }
 
-void pattern_EDP(uint len, uint t) {
-    for (uint i = 0; i < len; ++i) {
-        put_pixel(urgb_u32(0, 0x60, 0));
+void framebuffer(uint len, uint t) {
+    for(uint i=0; i<128; i++){
+        put_pixel(urgb_u32(0x00, 0x00, 0x10));
     }
 }
+
+/*  
+void pattern_EDP(uint len, uint t) {
+    for (uint i = 0; i < len; ++i) {
+        put_pixel(urgb_u32(0, 0, 0x20));
+    }
+}
+*/
 
 void pattern_snakes(uint len, uint t) {
     for (uint i = 0; i < len; ++i) {
@@ -82,11 +109,13 @@ const struct {
     pattern pat;
     const char *name;
 } pattern_table[] = {
-        {pattern_EDP,     "EDP"},
-        {pattern_snakes,  "Snakes!"},
+    //    {pattern_EDP,     "EDP"},
+        {framebuffer,    "test"}
+        /*{pattern_snakes,  "Snakes!"},
         {pattern_random,  "Random data"},
         {pattern_sparkle, "Sparkles"},
         {pattern_greys,   "Greys"},
+        */
 };
 
 int main() {
@@ -102,7 +131,7 @@ int main() {
     ws2812_program_init(pio, sm, offset, WS2812_PIN, 800000, IS_RGBW);
 
     int t = 0;
-    while (1) {
+//    while (1) {
         int pat = rand() % count_of(pattern_table);
         int dir = (rand() >> 30) & 1 ? 1 : -1;
         puts(pattern_table[pat].name);
@@ -112,5 +141,5 @@ int main() {
             sleep_ms(10);
             t += dir;
         }
-    }
+//    }
 }
