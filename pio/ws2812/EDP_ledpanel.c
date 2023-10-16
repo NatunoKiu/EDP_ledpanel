@@ -51,14 +51,27 @@ char型をint型にキャストするとchar型の文字に割り当てられて
 １０進数を４bitの２進数の各桁が示す１０進数の値の内大きい順から割っていく方法
 */
 
+uint8_t digitCnt(uint32_t num){
+    uint8_t divide_cnt = 0;
+    while(divide_cnt = 0){
+    hex /= 10;
+    divide_cnt += 1;       
+    }
+    return divide_cnt;
+}
 
 char hexToBin(uint32_t hex){
-    uint8_t hexlen = sizeo((char)hex) / sizeof((char)hex[0]);
-    printf('hexlen:'%d,hexlen);
-    for( i=0; i < hexlen; i++ ){
-        char bin = strtol((char)hex, NULL, 16);
+    for(i=0; i<; i++){
+        uint8_t binBitNum[];
+        if( hex % 0x2 = 0 ){
+            binBitNum[i] = 0;
+        }if else( hex % 0x2 = 1 ){
+            binBitNum[i] = 0;
+        }
     }
-
+    printf('hexlen:'%d,hexlen);
+        char bin;
+        snprintf(bin, hexlen, );
     printf('binnum:'%d,bin);
     return bin;
 }
@@ -83,7 +96,7 @@ void framebuffer() {
   
 void pattern_EDP(uint len, uint t) {
     //文字データ：新潟大学コンピュータクラブ  -- EDP --
-    uint8_t print_char[] = { 0xf2, 0x00,0x01,0x02,0x03, 0xf0, 0xa8,0xe8,0xc9,0xda,0xee,0xb4,0xa4,0xde,0xcb, 0xf1, 0x00,0x00,0x0d,0x0d,0x00,0x25,0x24,0x30,0x00,0x0d,0x0d, };
+    char print_char[] = { 0xf2, 0x00,0x01,0x02,0x03, 0xf0, 0xa8,0xe8,0xc9,0xda,0xee,0xb4,0xa4,0xde,0xcb, 0xf1, 0x00,0x00,0x0d,0x0d,0x00,0x25,0x24,0x30,0x00,0x0d,0x0d, };
     for (uint i = 0; i < len; ++i) {
         put_pixel(urgb_u32(0, 0, 0x20));
     }
