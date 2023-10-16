@@ -69,25 +69,25 @@ void pattern_EDP() {
     const uint8_t print_char_len = sizeof(print_char) / sizeof(print_char[0]);
     uint8_t framebuffer[8][256][3];
 
-    for(i=0; i<=print_char_len; i++){
+    for(uint i=0; i<=print_char_len; i++){
         bool bin_8bit[8];
-        const uint8_t bin_8bit_len = sizeof(bin_8bit) / sizeof(bin_8bit[0])
+        const uint8_t bin_8bit_len = sizeof(bin_8bit) / sizeof(bin_8bit[0]);
         uint8_t char_tmp = print_char[i];
         while(char_tmp <= 1){
             uint8_t roop_cnt = 0;
-            bin_8bit[8 - roopCnt] = char_tmp % 2;
+            bin_8bit[8 - roop_cnt] = char_tmp % 2;
             char_tmp /= 2;
             roop_cnt += 1;
         }
-        for(j=0; j<=bin_8bit_len; j++){
+        for(uint j=0; j<=bin_8bit_len; j++){
             if(bin_8bit[j] == 0){
                 // set no color
-                for(k=0; k<=3; k++){
+                for(uint k=0; k<=3; k++){
                     framebuffer[j][i][k] = 0;
                 }
             }else if(bin_8bit[j] == 1){
                 // set RGB color
-                for(k=0; k<=3; k++){
+                for(uint k=0; k<=3; k++){
                     framebuffer[j][i][k] = 10;
                 }
             }
