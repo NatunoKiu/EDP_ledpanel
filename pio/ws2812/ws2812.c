@@ -12,8 +12,9 @@
 #include "hardware/clocks.h"
 #include "ws2812.pio.h"
 
-#define IS_RGBW true
-#define NUM_PIXELS 150
+#define IS_RGBW false
+#define NUM_PIXELS 512 
+// NUM_PIXELS は パネルのドット数
 
 #ifdef PICO_DEFAULT_WS2812_PIN
 #define WS2812_PIN PICO_DEFAULT_WS2812_PIN
@@ -31,6 +32,12 @@ static inline uint32_t urgb_u32(uint8_t r, uint8_t g, uint8_t b) {
             ((uint32_t) (r) << 8) |
             ((uint32_t) (g) << 16) |
             (uint32_t) (b);
+}
+
+void pattern_EDP(uint len, uint t) {
+    for (uint i = 0; i < len; ++i) {
+        put_pixel(urgb_u32(0, 0x60, 0));
+    }
 }
 
 void pattern_snakes(uint len, uint t) {
@@ -75,6 +82,7 @@ const struct {
     pattern pat;
     const char *name;
 } pattern_table[] = {
+        {pattern_EDP,     "EDP"},
         {pattern_snakes,  "Snakes!"},
         {pattern_random,  "Random data"},
         {pattern_sparkle, "Sparkles"},
