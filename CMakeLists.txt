@@ -1,58 +1,20 @@
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.13)
+# FILL YOUR "pico-sdk" PATH
+set(PICO_SDK_PATH  YOUR_SDK_PATH)
 
-# Pull in SDK (must be before project)
 include(pico_sdk_import.cmake)
-
-include(pico_extras_import_optional.cmake)
-
-project(pico_examples C CXX ASM)
-set(CMAKE_C_STANDARD 11)
+project(EDP_ledpanel C CXX ASM)
+set(CMAKE_C_STNDARD 11)
 set(CMAKE_CXX_STANDARD 17)
-
-if (PICO_SDK_VERSION_STRING VERSION_LESS "1.3.0")
-    message(FATAL_ERROR "Raspberry Pi Pico SDK version 1.3.0 (or later) required. Your version is ${PICO_SDK_VERSION_STRING}")
-endif()
-
-set(PICO_EXAMPLES_PATH ${PROJECT_SOURCE_DIR})
-
-# Initialize the SDK
 pico_sdk_init()
 
-include(example_auto_set_url.cmake)
-# Add blink example
-add_subdirectory(blink)
+add_executable(EDP_ledpanel
+	EDP_ledpanel.c
+)
 
-# Add hello world example
-add_subdirectory(hello_world)
+pico_enable_stdio_usb(EDP_ledpanel 1)
+pico_enable_stdio_uart(EDP_ledpanel 0)
+pico_add_extra_outputs(EDP_ledpanel)
 
-add_compile_options(-Wall
-        -Wno-format          # int != int32_t as far as the compiler is concerned because gcc has int32_t as long int
-        -Wno-unused-function # we have some for the docs that aren't called
-        )
-if (CMAKE_C_COMPILER_ID STREQUAL "GNU")
-    add_compile_options(-Wno-maybe-uninitialized)
-endif()
+target_link_libraries(EDP_ledpanel pico_stdlib hardware_adc hardware_i2c hardware_pio)
 
-# Hardware-specific examples in subdirectories:
-add_subdirectory(adc)
-add_subdirectory(clocks)
-add_subdirectory(cmake)
-add_subdirectory(divider)
-add_subdirectory(dma)
-add_subdirectory(flash)
-add_subdirectory(gpio)
-add_subdirectory(i2c)
-add_subdirectory(interp)
-add_subdirectory(multicore)
-add_subdirectory(picoboard)
-add_subdirectory(pico_w)
-add_subdirectory(pio)
-add_subdirectory(pwm)
-add_subdirectory(reset)
-add_subdirectory(rtc)
-add_subdirectory(spi)
-add_subdirectory(system)
-add_subdirectory(timer)
-add_subdirectory(uart)
-add_subdirectory(usb)
-add_subdirectory(watchdog)
