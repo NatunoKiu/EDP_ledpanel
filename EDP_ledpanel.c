@@ -22,7 +22,7 @@
 #define WS2812_PIN PICO_DEFAULT_WS2812_PIN
 #else
 // default to pin 2 if the board doesn't have a default WS2812 pin defined
-#define WS2812_PIN 16
+#define WS2812_PIN 2
 #endif
 
 static inline void put_pixel(uint32_t pixel_grb) {
@@ -36,34 +36,39 @@ static inline uint32_t urgb_u32(uint8_t r, uint8_t g, uint8_t b) {
             (uint32_t) (b);
 }
   
-void pattern_EDP() {
-    //文字データ：新潟大学コンピュータクラブ  -- EDP --
-    uint8_t print_char[] = { 0xf2, 0x00,0x01,0x02,0x03, 0xf0, 0xa8,0xe8};//,0xc9,0xda,0xee,0xb4,0xa4,0xde,0xcb, 0xf1, 0x00,0x00,0x0d,0x0d,0x00,0x25,0x24,0x30,0x00,0x0d,0x0d, };
+void pattern_EDP(uint len, uint t) {
+    //8*4の四角
+    uint8_t print_char[] = {0b00000001,0b00000001,0b00000001,0xFF};
+
     const uint8_t print_char_len = sizeof(print_char) / sizeof(print_char[0]);
+    printf("print_char_len:%d",print_char_len);
     const uint panel_row = 32;
     const uint panel_column = 8;
-    const uint8_t red = 10;
-    const uint8_t green = 10;
+    const uint8_t red = 0xFF;
+    const uint8_t green = 0xFF;
     const uint8_t blue = 0; 
+    printf("print_char_len:%d",print_char_len);
 
     // framebuffer init
     uint8_t framebuffer[panel_column][panel_row][3];
     for (uint i=0; i<panel_column; i++){
         for(uint j=0; j<panel_row; j++){
-            for(uint k=0; k<3; j++){
+            for(uint k=0; k<3; k++){
                 framebuffer[i][j][k] = 0;
+                //printf("framebuffer[%d][%d][%d]:%d",i,j,k,framebuffer[i][j][k]);
             }
         }
     }
 
-    // write chardata in framebuffer
-    for(uint i=0; i<=print_char_len; i++){
+    // set chardata in framebuffer
+    for(uint i=0; i<print_char_len; i++){
         bool char_bit[8];
         const uint8_t char_bit_len = sizeof(char_bit) / sizeof(char_bit[0]);
+        //printf("char_bit_len:%d",char_bit_len);
         uint8_t char_tmp = print_char[i];
         for(uint bit=0; bit<panel_column; bit++){
             char_bit[bit] = (char_tmp >> bit) & 1;
-            printf("char_bit[%d]:%d",bit ,char_bit[bit]);
+            //printf("char_bit[%d]:%d",bit ,char_bit[bit]);
         }
         /*
         uint8_t roop_cnt = 0;
@@ -73,7 +78,7 @@ void pattern_EDP() {
             roop_cnt += 1;
         }
         */
-        for(uint j=0; j<=char_bit_len; j++){
+        for(uint j=0; j<char_bit_len; j++){
             if(char_bit[j] == 0){
                 // set no color
                 for(uint k=0; k<3; k++){
@@ -88,18 +93,46 @@ void pattern_EDP() {
         } 
     }
 
-    // print framebuffer
+    for(uint i=0; i<panel_column; i++){
+        for(uint j=0; j<panel_row; j++){
+            printf("framebuffer[%d][%d]:%d,%d,%d\n",i,j,framebuffer[i][j][0],framebuffer[i][j][1],framebuffer[i][j][2]);
+        }
+    }
+
+    //put_pixel(urgb_u32(framebuffer[0][0][0],framebuffer[0][0][1],framebuffer[0][0][2]));
+/*
+    // printing pre framebuffer cache clear
+    for(uint i=0; i<panel_column*panel_row; i++){
+            put_pixel(urgb_u32(0,0,0));
+    }
+    */
+   for(uint i; i<8; i++){
+        for(uint j; j<32; j++){
+            for(uint k; k<3; k++){
+                printf("framebuffer[%d][%d][%d]:%d",i,j,k,framebuffer[i][j][k]);
+            }
+        }
+   }
+   put_pixel(urgb_u32(framebuffer[0][0][0],framebuffer[0][0][1],framebuffer[0][0][2]));
+   put_pixel(urgb_u32(framebuffer[1][0][0],framebuffer[1][1][1],framebuffer[1][0][2]));
+/*
+    // print framebuffer    
     for(uint i=0; i<panel_row; i++){
         if (i % 2 == 0){
             for(uint j=0; j<panel_column; j++){
                 put_pixel(urgb_u32(framebuffer[j][i][0], framebuffer[j][i][1], framebuffer[j][i][2]));
             }
-        }else if (i % 2 == 1){        
-            for(uint j=panel_column-1; j>=0; j--){  
+        }
+        if (i % 2 == 1){   
+            for(uint j=panel_column-1; j>=0; j--){     
+            //for(uint j=panel_column-1; j>0; j--){  
                 put_pixel(urgb_u32(framebuffer[j][i][0], framebuffer[j][i][1], framebuffer[j][i][2]));    
             }
         }
     }
+    sleep_ms(1000);
+    *?
+    
 }
 
 void pattern_snakes(uint len, uint t) { 
@@ -144,11 +177,12 @@ const struct {
     pattern pat;
     const char *name;
 } pattern_table[] = {
-        {pattern_EDP,     "EDP"},
+        {pattern_EDP,     "EDP"}/*,
         {pattern_snakes,  "Snakes!"},
         {pattern_random,  "Random data"},
         {pattern_sparkle, "Sparkles"},
-        {pattern_greys,   "Greys"},    
+        {pattern_greys,   "Greys"}, 
+        */   
 };
 
 int main() {
@@ -164,6 +198,11 @@ int main() {
     ws2812_program_init(pio, sm, offset, WS2812_PIN, 800000, IS_RGBW);
 
     int t = 0;
+    while(1){
+            pattern_EDP(0,0);
+    }
+
+    /*
     while (1) {
         int pat = rand() % count_of(pattern_table);
         int dir = (rand() >> 30) & 1 ? 1 : -1;
@@ -175,4 +214,5 @@ int main() {
             t += dir;
         }
     }
+    */
 }

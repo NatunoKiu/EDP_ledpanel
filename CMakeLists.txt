@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.13)
 # FILL YOUR "pico-sdk" PATH
-set(PICO_SDK_PATH  YOUR_SDK_PATH)
+set(PICO_SDK_PATH  /home/pc/pico/pico-sdk)
 
 include(pico_sdk_import.cmake)
 project(EDP_ledpanel C CXX ASM)
